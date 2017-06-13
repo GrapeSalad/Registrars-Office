@@ -7,7 +7,7 @@ using Registrar.Objects;
 
 namespace Registrar
 {
-  [Collection("registrar_test")]
+  [Collection("Registrar")]
   public class CourseTest : IDisposable
   {
     public CourseTest()
@@ -18,6 +18,7 @@ namespace Registrar
     public void Dispose()
     {
       Course.DeleteAll();
+      Student.DeleteAll();
     }
 
     [Fact]
@@ -30,15 +31,15 @@ namespace Registrar
     [Fact]
     public void Test_Equal_ReturnsTrueIfCoursesAreTheSame()
     {
-      Course firstCourse = new Course("Billiards", "B-125", default(DateTime));
-      Course secondCourse = new Course("Billiards", "B-125", default(DateTime));
+      Course firstCourse = new Course("Billiards", "B-125", default(DateTime), 4);
+      Course secondCourse = new Course("Billiards", "B-125", default(DateTime), 4);
       Assert.Equal(firstCourse, secondCourse);
     }
 
     [Fact]
     public void Test_Save_ToCourseDatabase()
     {
-      Course testCourse = new Course("Hand Fishing", "H-15", new DateTime (2017, 10, 8));
+      Course testCourse = new Course("Hand Fishing", "H-15", new DateTime (2017, 10, 8), 2);
       testCourse.Save();
 
       List<Course> result = Course.GetAll();
@@ -49,7 +50,7 @@ namespace Registrar
     [Fact]
     public void Test_Save_AssignsIdToObject()
     {
-      Course testCourse = new Course("Hand Fishing", "H-15", new DateTime (2017, 10, 8));
+      Course testCourse = new Course("Hand Fishing", "H-15", new DateTime (2017, 10, 8), 2);
       testCourse.Save();
       int testId = testCourse.GetId();
       int savedCourseId = Course.GetAll()[0].GetId();
@@ -59,10 +60,30 @@ namespace Registrar
     [Fact]
     public void Test_Find_FindsCourseInDatabase()
     {
-      Course testCourse = new Course("MeepMerp", "MM-00", new DateTime (2017, 10, 8));
+      Course testCourse = new Course("MeepMerp", "MM-00", new DateTime (2017, 10, 8), 3);
       testCourse.Save();
       Course foundCourse = Course.Find(testCourse.GetId());
       Assert.Equal(testCourse, foundCourse);
     }
+
+    [Fact]
+    public void GetStudents_ReturnsAllCourses_StudentList()
+    {
+
+      Course testCourse = new Course("Billiards", "B-1", new DateTime(2017, 1, 1), 3);
+      testCourse.Save();
+      Student testStudent1 = new Student("Sam", "Gam", new DateTime(2017, 1, 1));
+      testStudent1.Save();
+      Student testStudent2 = new Student("Fran", "Ham",new DateTime(2017, 1, 1));
+      testStudent2.Save();
+
+      testCourse.AddStudent(testStudent1);
+      testCourse.AddStudent(testStudent2);
+      List<Student> savedStudents = testCourse.GetStudents();
+      List<Student> testList = new List<Student> {testStudent1, testStudent2};
+
+      Assert.Equal(testList, savedStudents);
+    }
+
   }
 }

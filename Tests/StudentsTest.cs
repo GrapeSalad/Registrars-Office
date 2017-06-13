@@ -7,7 +7,7 @@ using Registrar.Objects;
 
 namespace Registrar
 {
-  [Collection("registrar_test")]
+  [Collection("Registrar")]
   public class StudentTest : IDisposable
   {
     public StudentTest()
@@ -18,6 +18,7 @@ namespace Registrar
     public void Dispose()
     {
       Student.DeleteAll();
+      Course.DeleteAll();
     }
 
     [Fact]
@@ -34,6 +35,7 @@ namespace Registrar
       Student secondStudent = new Student("Joe", "Mo", default(DateTime));
       Assert.Equal(firstStudent, secondStudent);
     }
+
     [Fact]
     public void Test_Save_ToStudentDatabase()
     {
@@ -53,6 +55,14 @@ namespace Registrar
       int testId = testStudent.GetId();
       int savedStudentId = Student.GetAll()[0].GetId();
       Assert.Equal(testId, savedStudentId);
+    }
+    [Fact]
+    public void Test_Find_FindsStudentInDatabase()
+    {
+      Student testStudent = new Student("MeepMerp", "Morp", new DateTime (2017, 10, 8));
+      testStudent.Save();
+      Student foundStudent = Student.Find(testStudent.GetId());
+      Assert.Equal(testStudent, foundStudent);
     }
   }
 }

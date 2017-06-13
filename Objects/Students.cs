@@ -53,6 +53,11 @@ namespace Registrar.Objects
     {
       return _dateOfEnrollment;
     }
+
+    public void SetId(int id)
+    {
+        _id = id;
+    }
     public static void DeleteAll()
     {
       SqlConnection conn = DB.Connection();
@@ -128,6 +133,43 @@ namespace Registrar.Objects
       {
         conn.Close();
       }
+    }
+    public static Student Find(int id)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT * FROM students WHERE id = @StudentId", conn);
+      SqlParameter courseIdParameter = new SqlParameter();
+      courseIdParameter.ParameterName = "@StudentId";
+      courseIdParameter.Value = id.ToString();
+      cmd.Parameters.Add(courseIdParameter);
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      int foundStudentId = 0;
+      string foundStudentFirstName = null;
+      string foundStudentLastName = null;
+      DateTime foundStudentDateOfEnrollment = default(DateTime);
+
+      while(rdr.Read())
+      {
+        foundStudentId = rdr.GetInt32(0);
+        foundStudentFirstName = rdr.GetString(1);
+        foundStudentLastName = rdr.GetString(2);
+        foundStudentDateOfEnrollment = rdr.GetDateTime(3);
+      }
+      Student foundStudent = new Student(foundStudentFirstName, foundStudentLastName, foundStudentDateOfEnrollment, foundStudentId);
+
+      if (rdr != null)
+     {
+       rdr.Close();
+     }
+     if (conn != null)
+     {
+       conn.Close();
+     }
+
+     return foundStudent;
     }
   }
 }
