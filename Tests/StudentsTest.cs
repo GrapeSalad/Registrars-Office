@@ -19,6 +19,7 @@ namespace Registrar
     {
       Student.DeleteAll();
       Course.DeleteAll();
+      // Department.DeleteAll();
     }
 
     [Fact]
