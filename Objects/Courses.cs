@@ -129,5 +129,43 @@ namespace Registrar.Objects
         conn.Close();
       }
     }
+
+    public static Course Find(int id)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT * FROM courses WHERE id = @CourseId", conn);
+      SqlParameter courseIdParameter = new SqlParameter();
+      courseIdParameter.ParameterName = "@CourseId";
+      courseIdParameter.Value = id.ToString();
+      cmd.Parameters.Add(courseIdParameter);
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      int foundCourseId = 0;
+      string foundCourseName = null;
+      string foundCourseNumber = null;
+      DateTime foundCourseStartDate = default(DateTime);
+
+      while(rdr.Read())
+      {
+        foundCourseId = rdr.GetInt32(0);
+        foundCourseName = rdr.GetString(1);
+        foundCourseNumber = rdr.GetString(2);
+        foundCourseStartDate = rdr.GetDateTime(3);
+      }
+      Course foundCourse = new Course(foundCourseName, foundCourseNumber, foundCourseStartDate, foundCourseId);
+
+      if (rdr != null)
+     {
+       rdr.Close();
+     }
+     if (conn != null)
+     {
+       conn.Close();
+     }
+
+     return foundCourse;
+    }
   }
 }

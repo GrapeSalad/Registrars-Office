@@ -55,5 +55,14 @@ namespace Registrar
       int savedCourseId = Course.GetAll()[0].GetId();
       Assert.Equal(testId, savedCourseId);
     }
+
+    [Fact]
+    public void Test_Find_FindsCourseInDatabase()
+    {
+      Course testCourse = new Course("MeepMerp", "MM-00", new DateTime (2017, 10, 8));
+      testCourse.Save();
+      Course foundCourse = Course.Find(testCourse.GetId());
+      Assert.Equal(testCourse, foundCourse);
+    }
   }
 }

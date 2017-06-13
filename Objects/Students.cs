@@ -12,7 +12,7 @@ namespace Registrar.Objects
     private string _lastName;
     private DateTime _dateOfEnrollment;
 
-    public Student(int Id, string FirstName, string LastName, DateTime DateOfEnrollment)
+    public Student(string FirstName, string LastName, DateTime DateOfEnrollment, int Id = 0)
     {
       _id = Id;
       _firstName = FirstName;
@@ -52,6 +52,44 @@ namespace Registrar.Objects
     public DateTime GetDateOfEnrollment()
     {
       return _dateOfEnrollment;
+    }
+    public static void DeleteAll()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+      SqlCommand cmd = new SqlCommand("DELETE FROM students;", conn);
+      cmd.ExecuteNonQuery();
+      conn.Close();
+    }
+
+    public static List<Student> GetAll()
+    {
+      List<Student> allStudents = new List<Student>{};
+
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT * FROM students;", conn);
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      while(rdr.Read())
+      {
+        int studentId = rdr.GetInt32(0);
+        string studentFirstName = rdr.GetString(1);
+        string studentLastName = rdr.GetString(2);
+        DateTime studentDateOfEnrollment = rdr.GetDateTime(3);
+        Student newStudent = new Student(studentFirstName, studentLastName, studentDateOfEnrollment, studentId);
+        allStudents.Add(newStudent);
+      }
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
+      if (conn != null)
+      {
+        conn.Close();
+      }
+      return allStudents;
     }
   }
 }
